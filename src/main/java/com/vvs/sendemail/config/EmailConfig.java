@@ -33,6 +33,9 @@ public class EmailConfig {
   @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
   private Boolean ttsl;
 
+  @Value("${spring.mail.properties.mail.smtp.ssl.enable}")
+  private Boolean ssl;
+
   @Value("${spring.mail.smtp.debug}")
   private Boolean debug;
 

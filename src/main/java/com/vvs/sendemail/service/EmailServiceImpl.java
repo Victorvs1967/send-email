@@ -31,6 +31,7 @@ public class EmailServiceImpl implements EmailService {
     properties.put("mail.transport.protocol", "smtp");
     properties.put("mail.smtp.host", emailConfig.getHost());
     properties.put("mail.smtp.port", emailConfig.getPort());
+    properties.put("mail.smtp.ssl.enable", emailConfig.getSsl());
     properties.put("mail.smtp.starttls.enable", emailConfig.getTtsl());
     properties.put("mail.smtp.auth", emailConfig.getAuth());
 
