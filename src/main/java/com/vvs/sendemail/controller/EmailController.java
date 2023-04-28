@@ -22,7 +22,7 @@ public class EmailController {
 
     emailService.sendMail(emailResponse);
 
-    return new ResponseEntity<>("Email sent successfully!", HttpStatus.OK);
+    return new ResponseEntity<String>("Email sent successfully!", HttpStatus.OK);
   }
 
 }

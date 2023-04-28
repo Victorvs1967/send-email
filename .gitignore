@@ -31,4 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
-.evv
+.env
+setenv.sh
