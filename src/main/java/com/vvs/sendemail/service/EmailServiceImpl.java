@@ -2,44 +2,57 @@ package com.vvs.sendemail.service;
 
 import java.util.Properties;
 
+import javax.mail.Authenticator;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.Message.RecipientType;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import com.vvs.sendemail.config.EmailConfig;
 import com.vvs.sendemail.model.EmailResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-  @Autowired
-  private EmailConfig emailConfig;
+  private final EmailConfig emailConfig;
 
   @Override
   public void sendMail(EmailResponse email) {
 
-    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-    mailSender.setHost(emailConfig.getHost());
-    mailSender.setPort(emailConfig.getPort());
-    mailSender.setUsername(emailConfig.getUsername());
-    mailSender.setPassword(emailConfig.getPassword());
+    Properties properties = new Properties();
+    properties.put("mail.transport.protocol", "smtp");
+    properties.put("mail.smtp.host", emailConfig.getHost());
+    properties.put("mail.smtp.port", emailConfig.getPort());
+    properties.put("mail.smtp.starttls.enable", emailConfig.getTtsl());
+    properties.put("mail.smtp.auth", emailConfig.getAuth());
 
-    Properties javaMailProperties = new Properties();
-    javaMailProperties.put("mail.smtp.starttls.enable", "true");
-    javaMailProperties.put("mail.smtp.auth", "true");
-    javaMailProperties.put("mail.transport.protocol", "smtp");
-    javaMailProperties.put("mail.debug", "false");
-    mailSender.setJavaMailProperties(javaMailProperties);
+    Session session = Session.getInstance(properties, new Authenticator() {
+      protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(emailConfig.getUsername(), emailConfig.getPassword());
+      }
+    });
+    session.setDebug(emailConfig.getDebug());
 
-    SimpleMailMessage mailMessage = new SimpleMailMessage();
-    mailMessage.setTo(email.getEmailTo());
-    mailMessage.setSubject(email.getSubject());
-    mailMessage.setText(email.getMessage());
-    mailMessage.setFrom("victorsmirnov67@mail.com");
+    try {
+      MimeMessage message = new MimeMessage(session);
+      message.setFrom(new InternetAddress(emailConfig.getUsername()));
+      message.addRecipient(RecipientType.TO, new InternetAddress(email.getEmailTo()));
+      message.setSubject(email.getSubject());
+      message.setContent(email.getMessage(), "text/html");
 
-    mailSender.send(mailMessage);
-
+      System.out.println("sending...");
+      Transport.send(message);
+      System.out.println("Message sent successfuly...");
+    } catch (MessagingException e) {
+      e.printStackTrace();
+    }
   }
-  
 }

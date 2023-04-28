@@ -10,11 +10,11 @@ import lombok.Data;
 @Data
 @Component
 public class EmailConfig {
-  
+
   @NotNull
   @Value("${spring.mail.host}")
   private String host;
-  
+
   @NotNull
   @Value("${spring.mail.port}")
   private int port;
@@ -26,5 +26,14 @@ public class EmailConfig {
   @NotNull
   @Value("${spring.mail.password}")
   private String password;
+
+  @Value("${spring.mail.properties.mail.smtp.auth}")
+  private Boolean auth;
+
+  @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
+  private Boolean ttsl;
+
+  @Value("${spring.mail.smtp.debug}")
+  private Boolean debug;
 
 }
